@@ -19,15 +19,28 @@ const BusinessProfile = () => {
     licenseNumber: licenseNumber,
     gstinNumber: "22AAAAA0000A1Z5",
     address: "123 Food Street, Cuisine District, City - 123456",
-    website: "https://samplerestaurant.com", // Added website field
+    website: "https://samplerestaurant.com",
     owner: {
       name: "John Doe",
       photoUrl: "/placeholder.svg"
     },
     labReports: [
-      { type: "Water Quality", date: "2024-02-01", status: "Passed" },
-      { type: "Pest Control", date: "2024-01-15", status: "Passed" },
-      { type: "Food Safety", date: "2024-01-30", status: "Passed" }
+      { type: "Water Quality", date: "2024-02-01", validTill: "2024-08-01", status: "Passed" },
+      { type: "Pest Control", date: "2024-01-15", validTill: "2024-07-15", status: "Passed" },
+      { type: "Food Safety", date: "2024-01-30", validTill: "2024-07-30", status: "Passed" },
+      { type: "Laboratory", date: "2024-02-10", validTill: "2024-08-10", status: "Passed" },
+      { type: "FSMS", date: "2024-02-05", validTill: "2024-08-05", status: "Passed" },
+      { type: "Kitchen Layout", date: "2024-01-20", validTill: "2024-07-20", status: "Passed" },
+      { type: "Health and Hygiene", date: "2024-02-15", validTill: "2024-08-15", status: "Passed" },
+      { type: "Waste Management", date: "2024-02-20", validTill: "2024-08-20", status: "Passed" }
+    ],
+    certifications: [
+      { type: "FSSAI License", number: "12345678901234", validTill: "2025-03-01", status: "Active" },
+      { type: "Trade License", number: "TL987654321", validTill: "2025-02-01", status: "Active" },
+      { type: "GST Registration", number: businessData?.gstinNumber, validTill: "2025-04-01", status: "Active" },
+      { type: "Fire Safety Certificate", number: "FSC123456", validTill: "2025-01-01", status: "Active" },
+      { type: "Liquor License", number: "LL789012", validTill: "2024-12-31", status: "Active" },
+      { type: "Music License", number: "ML456789", validTill: "2024-12-31", status: "Active" }
     ],
     employees: [
       { name: "Alice Smith", role: "Head Chef", photoUrl: "/placeholder.svg" },
@@ -117,9 +130,29 @@ const BusinessProfile = () => {
                 <div>
                   <p className="font-medium">{report.type}</p>
                   <p className="text-sm text-gray-600">Date: {report.date}</p>
+                  <p className="text-sm text-gray-600">Valid Till: {report.validTill}</p>
                 </div>
                 <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full">
                   {report.status}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Restaurant Certifications */}
+        <Card className="p-6">
+          <h2 className="text-2xl font-semibold mb-4">Restaurant Certifications</h2>
+          <div className="grid gap-4">
+            {businessData.certifications.map((cert, index) => (
+              <div key={index} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium">{cert.type}</p>
+                  <p className="text-sm text-gray-600">Number: {cert.number}</p>
+                  <p className="text-sm text-gray-600">Valid Till: {cert.validTill}</p>
+                </div>
+                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full">
+                  {cert.status}
                 </span>
               </div>
             ))}
