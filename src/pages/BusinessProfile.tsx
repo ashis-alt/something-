@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { MessageSquare } from "lucide-react";
+import { Edit, Mail, Phone } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
@@ -15,6 +15,8 @@ const mockBusinessData = {
   gstinNumber: "22AAAAA0000A1Z5",
   address: "123 Food Street, Cuisine District, City - 123456",
   website: "https://samplerestaurant.com",
+  fssaiCare: "1800-112-100",
+  email: "contact@samplerestaurant.com",
   owner: {
     name: "John Doe",
     photoUrl: "/placeholder.svg"
@@ -64,10 +66,6 @@ const BusinessProfile = () => {
     licenseNumber: licenseNumber
   };
 
-  const handleComplaint = () => {
-    navigate(`/register-complaint/${licenseNumber}`);
-  };
-
   const handleReviewSubmit = () => {
     if (!review.trim()) {
       toast.error("Please write a review before submitting");
@@ -86,33 +84,60 @@ const BusinessProfile = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4">
       <div className="max-w-4xl mx-auto space-y-8">
-        {/* Basic Information */}
+        {/* Profile Section */}
         <Card className="p-6">
           <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-3xl font-bold mb-4">{businessData.name}</h1>
-              <p className="text-gray-600">License: {businessData.licenseNumber}</p>
-              <p className="text-gray-600">GSTIN: {businessData.gstinNumber}</p>
-              <p className="text-gray-600">Address: {businessData.address}</p>
-            </div>
-            <div className="flex items-start gap-6">
-              <div className="bg-white p-2 rounded-lg shadow-sm">
-                <QRCodeSVG
-                  value={qrCodeContent}
-                  size={128}
-                  level="H"
-                  includeMargin={true}
-                />
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <Avatar className="h-20 w-20">
+                  <AvatarImage src={businessData.owner.photoUrl} alt={businessData.name} />
+                  <AvatarFallback>{businessData.name[0]}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <h1 className="text-3xl font-bold">{businessData.name}</h1>
+                  <p className="text-gray-600">License: {businessData.licenseNumber}</p>
+                </div>
               </div>
-              <Button onClick={handleComplaint} variant="destructive">
-                <MessageSquare className="mr-2" />
-                Register Complaint
-              </Button>
+              
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  <span>FSSAI Care: {businessData.fssaiCare}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  <span>Email: {businessData.email}</span>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={() => toast.info("Edit profile functionality coming soon")}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Profile
+                </Button>
+                <Button variant="outline" onClick={() => toast.info("License renewal functionality coming soon")}>
+                  Apply for License Renewal
+                </Button>
+                <Button variant="outline" onClick={() => toast.info("New license functionality coming soon")}>
+                  Apply for New License
+                </Button>
+                <Button variant="outline" onClick={() => toast.info("Lab reports functionality coming soon")}>
+                  Apply for Lab Reports
+                </Button>
+              </div>
+            </div>
+            <div className="bg-white p-2 rounded-lg shadow-sm">
+              <QRCodeSVG
+                value={qrCodeContent}
+                size={128}
+                level="H"
+                includeMargin={true}
+              />
             </div>
           </div>
         </Card>
 
-        {/* Owner Information */}
+        {/* Rest of the existing sections */}
         <Card className="p-6">
           <h2 className="text-2xl font-semibold mb-4">Owner Information</h2>
           <div className="flex items-center gap-4">
