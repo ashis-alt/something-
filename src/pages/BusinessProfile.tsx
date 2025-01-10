@@ -17,6 +17,7 @@ const BusinessProfile = () => {
     name: "Sample Restaurant",
     licenseNumber: licenseNumber,
     gstinNumber: "22AAAAA0000A1Z5",
+    address: "123 Food Street, Cuisine District, City - 123456", // Added address field
     owner: {
       name: "John Doe",
       photoUrl: "/placeholder.svg"
@@ -65,6 +66,7 @@ const BusinessProfile = () => {
               <h1 className="text-3xl font-bold mb-4">{businessData.name}</h1>
               <p className="text-gray-600">License: {businessData.licenseNumber}</p>
               <p className="text-gray-600">GSTIN: {businessData.gstinNumber}</p>
+              <p className="text-gray-600">Address: {businessData.address}</p>
             </div>
             <Button onClick={handleComplaint} variant="destructive">
               <MessageSquare className="mr-2" />
