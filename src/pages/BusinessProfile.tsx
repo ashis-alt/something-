@@ -6,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MessageSquare } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { QRCodeSVG } from "qrcode.react";
 
 const BusinessProfile = () => {
   const { licenseNumber } = useParams();
@@ -17,7 +18,8 @@ const BusinessProfile = () => {
     name: "Sample Restaurant",
     licenseNumber: licenseNumber,
     gstinNumber: "22AAAAA0000A1Z5",
-    address: "123 Food Street, Cuisine District, City - 123456", // Added address field
+    address: "123 Food Street, Cuisine District, City - 123456",
+    website: "https://samplerestaurant.com", // Added website field
     owner: {
       name: "John Doe",
       photoUrl: "/placeholder.svg"
@@ -56,6 +58,12 @@ const BusinessProfile = () => {
     setReview("");
   };
 
+  // Create QR code content
+  const qrCodeContent = JSON.stringify({
+    license: businessData.licenseNumber,
+    website: businessData.website
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -68,10 +76,20 @@ const BusinessProfile = () => {
               <p className="text-gray-600">GSTIN: {businessData.gstinNumber}</p>
               <p className="text-gray-600">Address: {businessData.address}</p>
             </div>
-            <Button onClick={handleComplaint} variant="destructive">
-              <MessageSquare className="mr-2" />
-              Register Complaint
-            </Button>
+            <div className="flex items-start gap-6">
+              <div className="bg-white p-2 rounded-lg shadow-sm">
+                <QRCodeSVG
+                  value={qrCodeContent}
+                  size={128}
+                  level="H"
+                  includeMargin={true}
+                />
+              </div>
+              <Button onClick={handleComplaint} variant="destructive">
+                <MessageSquare className="mr-2" />
+                Register Complaint
+              </Button>
+            </div>
           </div>
         </Card>
 
