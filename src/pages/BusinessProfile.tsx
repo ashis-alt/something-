@@ -3,8 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Edit, Mail, Phone, MapPin, Building, Hash } from "lucide-react";
+import { Edit, Mail, Phone, MapPin, Building, Hash, Plus, Trash2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
 
@@ -60,21 +61,11 @@ const BusinessProfile = () => {
   const { licenseNumber } = useParams();
   const navigate = useNavigate();
   const [review, setReview] = useState("");
-
-  // Create business data with the license number from URL
-  const businessData = {
+  const [isEditing, setIsEditing] = useState<{ [key: string]: boolean }>({});
+  const [businessData, setBusinessData] = useState({
     ...mockBusinessData,
     licenseNumber: licenseNumber
-  };
-
-  const handleReviewSubmit = () => {
-    if (!review.trim()) {
-      toast.error("Please write a review before submitting");
-      return;
-    }
-    toast.success("Review submitted successfully!");
-    setReview("");
-  };
+  });
 
   // Create QR code content
   const qrCodeContent = JSON.stringify({
@@ -82,16 +73,70 @@ const BusinessProfile = () => {
     website: businessData.website
   });
 
-  const handleEditProfile = () => {
-    toast.info("Edit profile functionality coming soon");
+  const handleEdit = (section: string) => {
+    setIsEditing(prev => ({ ...prev, [section]: true }));
+  };
+
+  const handleSave = (section: string) => {
+    setIsEditing(prev => ({ ...prev, [section]: false }));
+    toast.success(`${section} updated successfully`);
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setBusinessData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleOwnerChange = (field: string, value: string) => {
+    setBusinessData(prev => ({
+      ...prev,
+      owner: {
+        ...prev.owner,
+        [field]: value
+      }
+    }));
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, type: string) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Handle file upload logic here
+      toast.success(`${type} uploaded successfully`);
+    }
   };
 
   const handleAddLabReport = () => {
-    toast.info("Add lab report functionality coming soon");
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,.doc,.docx';
+    input.onchange = (e) => handleFileUpload(e as React.ChangeEvent<HTMLInputElement>, 'Lab Report');
+    input.click();
   };
 
-  const handleRemoveLabReport = (index: number) => {
-    toast.info(`Remove lab report ${index + 1} functionality coming soon`);
+  const handleAddCertification = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,.doc,.docx';
+    input.onchange = (e) => handleFileUpload(e as React.ChangeEvent<HTMLInputElement>, 'Certification');
+    input.click();
+  };
+
+  const handleAddTeamMember = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => handleFileUpload(e as React.ChangeEvent<HTMLInputElement>, 'Team Member Photo');
+    input.click();
+  };
+
+  const handleAddFacilityPhoto = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => handleFileUpload(e as React.ChangeEvent<HTMLInputElement>, 'Facility Photo');
+    input.click();
   };
 
   return (
@@ -108,30 +153,78 @@ const BusinessProfile = () => {
                 </Avatar>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <h1 className="text-3xl font-bold">{businessData.name}</h1>
-                    <Button variant="ghost" size="icon" onClick={handleEditProfile}>
+                    {isEditing.name ? (
+                      <Input
+                        value={businessData.name}
+                        onChange={(e) => handleInputChange('name', e.target.value)}
+                        className="text-3xl font-bold"
+                      />
+                    ) : (
+                      <h1 className="text-3xl font-bold">{businessData.name}</h1>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => isEditing.name ? handleSave('name') : handleEdit('name')}
+                    >
                       <Edit className="h-4 w-4" />
                     </Button>
                   </div>
                   <div className="space-y-1">
+                    {/* License Number */}
                     <div className="flex items-center gap-2">
                       <Hash className="h-4 w-4" />
-                      <span>License: {businessData.licenseNumber}</span>
-                      <Button variant="ghost" size="icon" onClick={handleEditProfile}>
+                      {isEditing.license ? (
+                        <Input
+                          value={businessData.licenseNumber}
+                          onChange={(e) => handleInputChange('licenseNumber', e.target.value)}
+                        />
+                      ) : (
+                        <span>License: {businessData.licenseNumber}</span>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => isEditing.license ? handleSave('license') : handleEdit('license')}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                     </div>
+                    {/* GSTIN */}
                     <div className="flex items-center gap-2">
                       <Building className="h-4 w-4" />
-                      <span>GSTIN: {businessData.gstinNumber}</span>
-                      <Button variant="ghost" size="icon" onClick={handleEditProfile}>
+                      {isEditing.gstin ? (
+                        <Input
+                          value={businessData.gstinNumber}
+                          onChange={(e) => handleInputChange('gstinNumber', e.target.value)}
+                        />
+                      ) : (
+                        <span>GSTIN: {businessData.gstinNumber}</span>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => isEditing.gstin ? handleSave('gstin') : handleEdit('gstin')}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                     </div>
+                    {/* Address */}
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4" />
-                      <span>Address: {businessData.address}</span>
-                      <Button variant="ghost" size="icon" onClick={handleEditProfile}>
+                      {isEditing.address ? (
+                        <Input
+                          value={businessData.address}
+                          onChange={(e) => handleInputChange('address', e.target.value)}
+                        />
+                      ) : (
+                        <span>Address: {businessData.address}</span>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => isEditing.address ? handleSave('address') : handleEdit('address')}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                     </div>
@@ -140,24 +233,69 @@ const BusinessProfile = () => {
               </div>
               
               <div className="space-y-2">
+                {/* FSSAI Care */}
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4" />
-                  <span>FSSAI Care: {businessData.fssaiCare}</span>
+                  {isEditing.fssaiCare ? (
+                    <Input
+                      value={businessData.fssaiCare}
+                      onChange={(e) => handleInputChange('fssaiCare', e.target.value)}
+                    />
+                  ) : (
+                    <span>FSSAI Care: {businessData.fssaiCare}</span>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => isEditing.fssaiCare ? handleSave('fssaiCare') : handleEdit('fssaiCare')}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
                 </div>
+                {/* FSSAI Care Email */}
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
-                  <span>FSSAI Care Email: {businessData.fssaiCareEmail}</span>
+                  {isEditing.fssaiCareEmail ? (
+                    <Input
+                      value={businessData.fssaiCareEmail}
+                      onChange={(e) => handleInputChange('fssaiCareEmail', e.target.value)}
+                    />
+                  ) : (
+                    <span>FSSAI Care Email: {businessData.fssaiCareEmail}</span>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => isEditing.fssaiCareEmail ? handleSave('fssaiCareEmail') : handleEdit('fssaiCareEmail')}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
                 </div>
+                {/* Business Email */}
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
-                  <span>Email: {businessData.email}</span>
+                  {isEditing.email ? (
+                    <Input
+                      value={businessData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                    />
+                  ) : (
+                    <span>Email: {businessData.email}</span>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => isEditing.email ? handleSave('email') : handleEdit('email')}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
 
               <div className="flex gap-3">
-                <Button variant="outline" onClick={handleEditProfile}>
+                <Button variant="outline" onClick={() => toast.info("Profile update functionality coming soon")}>
                   <Edit className="mr-2 h-4 w-4" />
-                  Edit Profile
+                  Update Profile
                 </Button>
                 <Button variant="outline" onClick={() => toast.info("License renewal functionality coming soon")}>
                   Apply for License Renewal
@@ -185,10 +323,22 @@ const BusinessProfile = () => {
         <Card className="p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold">Owner Information</h2>
-            <Button variant="outline" onClick={handleEditProfile}>
-              <Edit className="mr-2 h-4 w-4" />
-              Edit Owner Info
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => handleEdit('owner')}>
+                <Edit className="mr-2 h-4 w-4" />
+                Edit Owner Info
+              </Button>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                id="owner-photo"
+                onChange={(e) => handleFileUpload(e, 'Owner Photo')}
+              />
+              <Button variant="outline" onClick={() => document.getElementById('owner-photo')?.click()}>
+                Update Photo
+              </Button>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <Avatar className="h-20 w-20">
@@ -196,7 +346,15 @@ const BusinessProfile = () => {
               <AvatarFallback>{businessData.owner.name[0]}</AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-xl font-medium">{businessData.owner.name}</p>
+              {isEditing.owner ? (
+                <Input
+                  value={businessData.owner.name}
+                  onChange={(e) => handleOwnerChange('name', e.target.value)}
+                  className="text-xl font-medium"
+                />
+              ) : (
+                <p className="text-xl font-medium">{businessData.owner.name}</p>
+              )}
               <p className="text-gray-600">Owner</p>
             </div>
           </div>
@@ -207,7 +365,7 @@ const BusinessProfile = () => {
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold">Lab Reports</h2>
             <Button variant="outline" onClick={handleAddLabReport}>
-              <Edit className="mr-2 h-4 w-4" />
+              <Plus className="mr-2 h-4 w-4" />
               Add New Report
             </Button>
           </div>
@@ -223,8 +381,8 @@ const BusinessProfile = () => {
                   <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full">
                     {report.status}
                   </span>
-                  <Button variant="ghost" size="icon" onClick={() => handleRemoveLabReport(index)}>
-                    <Edit className="h-4 w-4" />
+                  <Button variant="ghost" size="icon" onClick={() => toast.info(`Remove report ${index + 1}`)}>
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -234,7 +392,13 @@ const BusinessProfile = () => {
 
         {/* Restaurant Certifications */}
         <Card className="p-6">
-          <h2 className="text-2xl font-semibold mb-4">Restaurant Certifications</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold">Restaurant Certifications</h2>
+            <Button variant="outline" onClick={handleAddCertification}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add New Certification
+            </Button>
+          </div>
           <div className="grid gap-4">
             {businessData.certifications.map((cert, index) => (
               <div key={index} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
@@ -243,9 +407,14 @@ const BusinessProfile = () => {
                   <p className="text-sm text-gray-600">Number: {cert.number}</p>
                   <p className="text-sm text-gray-600">Valid Till: {cert.validTill}</p>
                 </div>
-                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full">
-                  {cert.status}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full">
+                    {cert.status}
+                  </span>
+                  <Button variant="ghost" size="icon" onClick={() => toast.info(`Remove certification ${index + 1}`)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
@@ -253,16 +422,53 @@ const BusinessProfile = () => {
 
         {/* Employees */}
         <Card className="p-6">
-          <h2 className="text-2xl font-semibold mb-4">Our Team</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold">Our Team</h2>
+            <Button variant="outline" onClick={handleAddTeamMember}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Team Member
+            </Button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {businessData.employees.map((employee, index) => (
-              <div key={index} className="text-center">
+              <div key={index} className="text-center relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-0 right-0"
+                  onClick={() => toast.info(`Remove team member ${index + 1}`)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
                 <Avatar className="h-24 w-24 mx-auto mb-2">
                   <AvatarImage src={employee.photoUrl} alt={employee.name} />
                   <AvatarFallback>{employee.name[0]}</AvatarFallback>
                 </Avatar>
-                <p className="font-medium">{employee.name}</p>
-                <p className="text-gray-600">{employee.role}</p>
+                {isEditing[`employee${index}`] ? (
+                  <Input
+                    value={employee.name}
+                    onChange={(e) => handleInputChange(`employees.${index}.name`, e.target.value)}
+                    className="text-center"
+                  />
+                ) : (
+                  <p className="font-medium">{employee.name}</p>
+                )}
+                {isEditing[`employeeRole${index}`] ? (
+                  <Input
+                    value={employee.role}
+                    onChange={(e) => handleInputChange(`employees.${index}.role`, e.target.value)}
+                    className="text-center text-gray-600"
+                  />
+                ) : (
+                  <p className="text-gray-600">{employee.role}</p>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => isEditing[`employee${index}`] ? handleSave(`employee${index}`) : handleEdit(`employee${index}`)}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
               </div>
             ))}
           </div>
@@ -270,16 +476,47 @@ const BusinessProfile = () => {
 
         {/* Facility Photos */}
         <Card className="p-6">
-          <h2 className="text-2xl font-semibold mb-4">Facility Photos</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold">Facility Photos</h2>
+            <Button variant="outline" onClick={handleAddFacilityPhoto}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Photo
+            </Button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {businessData.facilityPhotos.map((photo, index) => (
-              <div key={index} className="space-y-2">
+              <div key={index} className="space-y-2 relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-2 right-2"
+                  onClick={() => toast.info(`Remove facility photo ${index + 1}`)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
                 <img
                   src={photo.url}
                   alt={photo.area}
                   className="w-full h-48 object-cover rounded-lg"
                 />
-                <p className="text-center font-medium">{photo.area}</p>
+                {isEditing[`photo${index}`] ? (
+                  <Input
+                    value={photo.area}
+                    onChange={(e) => handleInputChange(`facilityPhotos.${index}.area`, e.target.value)}
+                    className="text-center"
+                  />
+                ) : (
+                  <p className="text-center font-medium">{photo.area}</p>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => isEditing[`photo${index}`] ? handleSave(`photo${index}`) : handleEdit(`photo${index}`)}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Area Name
+                </Button>
               </div>
             ))}
           </div>
@@ -296,7 +533,12 @@ const BusinessProfile = () => {
                 onChange={(e) => setReview(e.target.value)}
                 className="w-full"
               />
-              <Button onClick={handleReviewSubmit}>Submit Review</Button>
+              <Button onClick={() => {
+                toast.success("Review submitted successfully!");
+                setReview("");
+              }}>
+                Submit Review
+              </Button>
             </div>
             <div className="space-y-4 mt-6">
               {businessData.reviews.map((review, index) => (
