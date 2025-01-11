@@ -111,7 +111,10 @@ const BusinessProfile = () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.pdf,.doc,.docx';
-    input.onchange = (e) => handleFileUpload(e as React.ChangeEvent<HTMLInputElement>, 'Lab Report');
+    input.onchange = (e) => {
+      const inputElement = e.target as HTMLInputElement;
+      handleFileUpload({ target: inputElement } as React.ChangeEvent<HTMLInputElement>, 'Lab Report');
+    };
     input.click();
   };
 
@@ -119,7 +122,10 @@ const BusinessProfile = () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.pdf,.doc,.docx';
-    input.onchange = (e) => handleFileUpload(e as React.ChangeEvent<HTMLInputElement>, 'Certification');
+    input.onchange = (e) => {
+      const inputElement = e.target as HTMLInputElement;
+      handleFileUpload({ target: inputElement } as React.ChangeEvent<HTMLInputElement>, 'Certification');
+    };
     input.click();
   };
 
@@ -127,7 +133,10 @@ const BusinessProfile = () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    input.onchange = (e) => handleFileUpload(e as React.ChangeEvent<HTMLInputElement>, 'Team Member Photo');
+    input.onchange = (e) => {
+      const inputElement = e.target as HTMLInputElement;
+      handleFileUpload({ target: inputElement } as React.ChangeEvent<HTMLInputElement>, 'Team Member Photo');
+    };
     input.click();
   };
 
@@ -135,7 +144,10 @@ const BusinessProfile = () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    input.onchange = (e) => handleFileUpload(e as React.ChangeEvent<HTMLInputElement>, 'Facility Photo');
+    input.onchange = (e) => {
+      const inputElement = e.target as HTMLInputElement;
+      handleFileUpload({ target: inputElement } as React.ChangeEvent<HTMLInputElement>, 'Facility Photo');
+    };
     input.click();
   };
 
@@ -333,7 +345,7 @@ const BusinessProfile = () => {
                 accept="image/*"
                 className="hidden"
                 id="owner-photo"
-                onChange={(e) => handleFileUpload(e, 'Owner Photo')}
+                onChange={(e) => handleFileUpload(e as React.ChangeEvent<HTMLInputElement>, 'Owner Photo')}
               />
               <Button variant="outline" onClick={() => document.getElementById('owner-photo')?.click()}>
                 Update Photo
