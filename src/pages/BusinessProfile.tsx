@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Edit, Mail, Phone } from "lucide-react";
+import { Edit, Mail, Phone, MapPin, Building, Hash } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
@@ -17,6 +17,7 @@ const mockBusinessData = {
   website: "https://samplerestaurant.com",
   fssaiCare: "1800-112-100",
   email: "contact@samplerestaurant.com",
+  fssaiCareEmail: "care@fssai.gov.in",
   owner: {
     name: "John Doe",
     photoUrl: "/placeholder.svg"
@@ -81,6 +82,18 @@ const BusinessProfile = () => {
     website: businessData.website
   });
 
+  const handleEditProfile = () => {
+    toast.info("Edit profile functionality coming soon");
+  };
+
+  const handleAddLabReport = () => {
+    toast.info("Add lab report functionality coming soon");
+  };
+
+  const handleRemoveLabReport = (index: number) => {
+    toast.info(`Remove lab report ${index + 1} functionality coming soon`);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -93,9 +106,36 @@ const BusinessProfile = () => {
                   <AvatarImage src={businessData.owner.photoUrl} alt={businessData.name} />
                   <AvatarFallback>{businessData.name[0]}</AvatarFallback>
                 </Avatar>
-                <div>
-                  <h1 className="text-3xl font-bold">{businessData.name}</h1>
-                  <p className="text-gray-600">License: {businessData.licenseNumber}</p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-3xl font-bold">{businessData.name}</h1>
+                    <Button variant="ghost" size="icon" onClick={handleEditProfile}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Hash className="h-4 w-4" />
+                      <span>License: {businessData.licenseNumber}</span>
+                      <Button variant="ghost" size="icon" onClick={handleEditProfile}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Building className="h-4 w-4" />
+                      <span>GSTIN: {businessData.gstinNumber}</span>
+                      <Button variant="ghost" size="icon" onClick={handleEditProfile}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      <span>Address: {businessData.address}</span>
+                      <Button variant="ghost" size="icon" onClick={handleEditProfile}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
               
@@ -106,12 +146,16 @@ const BusinessProfile = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
+                  <span>FSSAI Care Email: {businessData.fssaiCareEmail}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
                   <span>Email: {businessData.email}</span>
                 </div>
               </div>
 
               <div className="flex gap-3">
-                <Button variant="outline" onClick={() => toast.info("Edit profile functionality coming soon")}>
+                <Button variant="outline" onClick={handleEditProfile}>
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Profile
                 </Button>
@@ -137,9 +181,15 @@ const BusinessProfile = () => {
           </div>
         </Card>
 
-        {/* Rest of the existing sections */}
+        {/* Owner Information */}
         <Card className="p-6">
-          <h2 className="text-2xl font-semibold mb-4">Owner Information</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold">Owner Information</h2>
+            <Button variant="outline" onClick={handleEditProfile}>
+              <Edit className="mr-2 h-4 w-4" />
+              Edit Owner Info
+            </Button>
+          </div>
           <div className="flex items-center gap-4">
             <Avatar className="h-20 w-20">
               <AvatarImage src={businessData.owner.photoUrl} alt={businessData.owner.name} />
@@ -154,7 +204,13 @@ const BusinessProfile = () => {
 
         {/* Lab Reports */}
         <Card className="p-6">
-          <h2 className="text-2xl font-semibold mb-4">Lab Reports</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold">Lab Reports</h2>
+            <Button variant="outline" onClick={handleAddLabReport}>
+              <Edit className="mr-2 h-4 w-4" />
+              Add New Report
+            </Button>
+          </div>
           <div className="grid gap-4">
             {businessData.labReports.map((report, index) => (
               <div key={index} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
@@ -163,9 +219,14 @@ const BusinessProfile = () => {
                   <p className="text-sm text-gray-600">Date: {report.date}</p>
                   <p className="text-sm text-gray-600">Valid Till: {report.validTill}</p>
                 </div>
-                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full">
-                  {report.status}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full">
+                    {report.status}
+                  </span>
+                  <Button variant="ghost" size="icon" onClick={() => handleRemoveLabReport(index)}>
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
