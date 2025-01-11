@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
+import HygieneRating from "@/components/HygieneRating";
 
 // Mock data moved to the top - In a real app, this would come from an API
 const mockBusinessData = {
@@ -54,6 +55,28 @@ const mockBusinessData = {
   reviews: [
     { user: "User1", text: "Great experience!", date: "2024-02-01" },
     { user: "User2", text: "Excellent service", date: "2024-01-28" }
+  ]
+};
+
+const mockHygieneData = {
+  scores: {
+    foodHandling: 28,
+    cleanliness: 23,
+    staffHygiene: 18,
+    legalCompliance: 14,
+    customerComplaints: 9
+  },
+  violations: [
+    {
+      date: "2024-01-15",
+      reason: "Temperature control violation in refrigeration unit",
+      severity: "major" as const
+    },
+    {
+      date: "2024-02-01",
+      reason: "Minor cleaning schedule deviation",
+      severity: "minor" as const
+    }
   ]
 };
 
@@ -329,6 +352,10 @@ const BusinessProfile = () => {
               />
             </div>
           </div>
+          <HygieneRating
+            scores={mockHygieneData.scores}
+            violations={mockHygieneData.violations}
+          />
         </Card>
 
         {/* Owner Information */}
