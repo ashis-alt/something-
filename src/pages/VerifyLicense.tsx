@@ -15,7 +15,7 @@ const VerifyLicense = () => {
       toast.error("Please enter a license number");
       return;
     }
-    navigate(`/business-profile/${licenseNumber}`);
+    navigate(`/restaurant-profile/${licenseNumber}`);
   };
 
   return (
