@@ -47,7 +47,11 @@ const Index = () => {
       });
       
       if (error) {
-        toast.error(error.message);
+        if (error.message.includes('phone_provider_disabled')) {
+          toast.error("Phone authentication is not enabled. Please enable it in Supabase dashboard.");
+        } else {
+          toast.error(error.message);
+        }
       } else {
         setShowOTP(true);
         toast.success("OTP sent successfully!");
