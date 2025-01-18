@@ -2,15 +2,23 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Building2, User } from "lucide-react";
-import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 const Index = () => {
   const navigate = useNavigate();
   const [session, setSession] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [otp, setOtp] = useState("");
+  const [showOTP, setShowOTP] = useState(false);
 
   useEffect(() => {
     // Get initial session
@@ -31,6 +39,43 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  const handleSendOTP = async () => {
+    try {
+      const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+      const { error } = await supabase.auth.signInWithOtp({
+        phone: formattedPhone,
+      });
+      
+      if (error) {
+        toast.error(error.message);
+      } else {
+        setShowOTP(true);
+        toast.success("OTP sent successfully!");
+      }
+    } catch (error) {
+      toast.error("Failed to send OTP");
+    }
+  };
+
+  const handleVerifyOTP = async () => {
+    try {
+      const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+      const { error } = await supabase.auth.verifyOtp({
+        phone: formattedPhone,
+        token: otp,
+        type: 'sms',
+      });
+
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("Successfully verified!");
+      }
+    } catch (error) {
+      toast.error("Failed to verify OTP");
+    }
+  };
+
   if (!session) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-8">
@@ -38,13 +83,51 @@ const Index = () => {
           <h1 className="text-3xl font-bold text-center mb-8">
             Welcome to FSSAI Portal
           </h1>
-          <Card className="p-6">
-            <Auth
-              supabaseClient={supabase}
-              appearance={{ theme: ThemeSupa }}
-              theme="light"
-              providers={[]}
-            />
+          <Card className="p-6 space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number</Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="Enter phone number with country code (e.g. +91)"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+              />
+              {!showOTP && (
+                <Button 
+                  className="w-full" 
+                  onClick={handleSendOTP}
+                  disabled={!phoneNumber}
+                >
+                  Send OTP
+                </Button>
+              )}
+            </div>
+
+            {showOTP && (
+              <div className="space-y-2">
+                <Label>Enter OTP</Label>
+                <InputOTP
+                  value={otp}
+                  onChange={setOtp}
+                  maxLength={6}
+                  render={({ slots }) => (
+                    <InputOTPGroup>
+                      {slots.map((slot, index) => (
+                        <InputOTPSlot key={index} {...slot} />
+                      ))}
+                    </InputOTPGroup>
+                  )}
+                />
+                <Button 
+                  className="w-full" 
+                  onClick={handleVerifyOTP}
+                  disabled={otp.length !== 6}
+                >
+                  Verify OTP
+                </Button>
+              </div>
+            )}
           </Card>
         </div>
       </div>
