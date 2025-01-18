@@ -42,7 +42,7 @@ const Index = () => {
   const handleSendOTP = async () => {
     try {
       const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
-      const { error } = await supabase.auth.signInWithOtp({
+      const { data, error } = await supabase.auth.signInWithOtp({
         phone: formattedPhone,
       });
       
@@ -51,6 +51,10 @@ const Index = () => {
       } else {
         setShowOTP(true);
         toast.success("OTP sent successfully!");
+        // For development: If test OTP is enabled, show the OTP from the response
+        if (data?.user?.confirmation_sent_at) {
+          console.log("Test OTP Response:", data);
+        }
       }
     } catch (error) {
       toast.error("Failed to send OTP");
