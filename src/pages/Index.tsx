@@ -56,8 +56,8 @@ const Index = () => {
           console.log("Test OTP Response:", data);
         }
       }
-    } catch (error) {
-      toast.error("Failed to send OTP");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to send OTP");
     }
   };
 
@@ -75,8 +75,8 @@ const Index = () => {
       } else {
         toast.success("Successfully verified!");
       }
-    } catch (error) {
-      toast.error("Failed to verify OTP");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to verify OTP");
     }
   };
 
