@@ -6,18 +6,22 @@ import ConsumerLogin from "@/pages/ConsumerLogin";
 import Index from "@/pages/Index";
 import RegisterComplaint from "@/pages/RegisterComplaint";
 import VerifyLicense from "@/pages/VerifyLicense";
+import { SessionContextProvider } from '@supabase/auth-helpers-react';
+import { supabase } from "@/integrations/supabase/client";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/business-login" element={<BusinessLogin />} />
-      <Route path="/consumer-login" element={<ConsumerLogin />} />
-      <Route path="/business-profile/:licenseNumber" element={<BusinessProfile />} />
-      <Route path="/restaurant-profile/:licenseNumber" element={<RestaurantProfile />} />
-      <Route path="/register-complaint" element={<RegisterComplaint />} />
-      <Route path="/verify-license" element={<VerifyLicense />} />
-    </Routes>
+    <SessionContextProvider supabaseClient={supabase}>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/business-login" element={<BusinessLogin />} />
+        <Route path="/consumer-login" element={<ConsumerLogin />} />
+        <Route path="/business-profile/:licenseNumber" element={<BusinessProfile />} />
+        <Route path="/restaurant-profile/:licenseNumber" element={<RestaurantProfile />} />
+        <Route path="/register-complaint" element={<RegisterComplaint />} />
+        <Route path="/verify-license" element={<VerifyLicense />} />
+      </Routes>
+    </SessionContextProvider>
   );
 }
 
