@@ -1,7 +1,4 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import HygieneRating from "@/components/HygieneRating";
 import ProfileHeader from "@/components/restaurant/ProfileHeader";
 import OwnerInfo from "@/components/restaurant/OwnerInfo";
@@ -10,6 +7,9 @@ import Certifications from "@/components/restaurant/Certifications";
 import TeamMembers from "@/components/restaurant/TeamMembers";
 import FacilityPhotos from "@/components/restaurant/FacilityPhotos";
 import Reviews from "@/components/restaurant/Reviews";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import ErrorDisplay from "@/components/ErrorDisplay";
+import { useBusinessData } from "@/hooks/useBusinessData";
 
 const mockHygieneData = {
   scores: {
@@ -35,66 +35,14 @@ const mockHygieneData = {
 
 const RestaurantProfile = () => {
   const { licenseNumber } = useParams();
-  const [businessData, setBusinessData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchBusinessData = async () => {
-      try {
-        const { data: business, error } = await supabase
-          .from('businesses')
-          .select(`
-            *,
-            owner:profiles(
-              full_name,
-              phone_number
-            )
-          `)
-          .eq('license_number', licenseNumber)
-          .maybeSingle();
-
-        if (error) {
-          throw error;
-        }
-
-        if (!business) {
-          toast.error("Business not found");
-          return;
-        }
-
-        setBusinessData(business);
-      } catch (error) {
-        console.error('Error fetching business data:', error);
-        toast.error("Failed to load business data");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (licenseNumber) {
-      fetchBusinessData();
-    }
-  }, [licenseNumber]);
+  const { businessData, isLoading } = useBusinessData(licenseNumber);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading business information...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner message="Loading business information..." />;
   }
 
   if (!businessData) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-xl text-gray-600">Business not found</p>
-        </div>
-      </div>
-    );
+    return <ErrorDisplay message="Business not found" />;
   }
 
   return (
