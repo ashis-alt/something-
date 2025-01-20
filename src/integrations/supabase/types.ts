@@ -9,7 +9,167 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      businesses: {
+        Row: {
+          address: string | null
+          business_name: string
+          business_type: string
+          created_at: string
+          id: string
+          license_number: string
+          owner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          business_name: string
+          business_type: string
+          created_at?: string
+          id?: string
+          license_number: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          business_name?: string
+          business_type?: string
+          created_at?: string
+          id?: string
+          license_number?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "businesses_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      complaints: {
+        Row: {
+          business_id: string | null
+          created_at: string
+          description: string
+          id: string
+          status: string | null
+          subject: string
+          submitted_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          business_id?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          status?: string | null
+          subject: string
+          submitted_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          status?: string | null
+          subject?: string
+          submitted_by?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "complaints_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "complaints_submitted_by_fkey"
+            columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inspections: {
+        Row: {
+          business_id: string | null
+          created_at: string
+          hygiene_rating: number | null
+          id: string
+          inspection_date: string
+          inspector_id: string | null
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          business_id?: string | null
+          created_at?: string
+          hygiene_rating?: number | null
+          id?: string
+          inspection_date: string
+          inspector_id?: string | null
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          business_id?: string | null
+          created_at?: string
+          hygiene_rating?: number | null
+          id?: string
+          inspection_date?: string
+          inspector_id?: string | null
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inspections_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inspections_inspector_id_fkey"
+            columns: ["inspector_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          phone_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id: string
+          phone_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone_number?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

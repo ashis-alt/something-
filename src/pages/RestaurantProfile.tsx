@@ -1,4 +1,7 @@
 import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import HygieneRating from "@/components/HygieneRating";
 import ProfileHeader from "@/components/restaurant/ProfileHeader";
 import OwnerInfo from "@/components/restaurant/OwnerInfo";
@@ -7,53 +10,6 @@ import Certifications from "@/components/restaurant/Certifications";
 import TeamMembers from "@/components/restaurant/TeamMembers";
 import FacilityPhotos from "@/components/restaurant/FacilityPhotos";
 import Reviews from "@/components/restaurant/Reviews";
-
-const mockBusinessData = {
-  name: "Sample Restaurant",
-  licenseNumber: "",  // Will be set from URL params
-  gstinNumber: "22AAAAA0000A1Z5",
-  address: "123 Food Street, Cuisine District, City - 123456",
-  website: "https://samplerestaurant.com",
-  fssaiCare: "1800-112-100",
-  email: "contact@samplerestaurant.com",
-  fssaiCareEmail: "care@fssai.gov.in",
-  owner: {
-    name: "John Doe",
-    photoUrl: "/placeholder.svg"
-  },
-  labReports: [
-    { type: "Water Quality", date: "2024-02-01", validTill: "2024-08-01", status: "Passed" },
-    { type: "Pest Control", date: "2024-01-15", validTill: "2024-07-15", status: "Passed" },
-    { type: "Food Safety", date: "2024-01-30", validTill: "2024-07-30", status: "Passed" },
-    { type: "Laboratory", date: "2024-02-10", validTill: "2024-08-10", status: "Passed" },
-    { type: "FSMS", date: "2024-02-05", validTill: "2024-08-05", status: "Passed" },
-    { type: "Kitchen Layout", date: "2024-01-20", validTill: "2024-07-20", status: "Passed" },
-    { type: "Health and Hygiene", date: "2024-02-15", validTill: "2024-08-15", status: "Passed" },
-    { type: "Waste Management", date: "2024-02-20", validTill: "2024-08-20", status: "Passed" }
-  ],
-  certifications: [
-    { type: "FSSAI License", number: "12345678901234", validTill: "2025-03-01", status: "Active" },
-    { type: "Trade License", number: "TL987654321", validTill: "2025-02-01", status: "Active" },
-    { type: "GST Registration", number: "22AAAAA0000A1Z5", validTill: "2025-04-01", status: "Active" },
-    { type: "Fire Safety Certificate", number: "FSC123456", validTill: "2025-01-01", status: "Active" },
-    { type: "Liquor License", number: "LL789012", validTill: "2024-12-31", status: "Active" },
-    { type: "Music License", number: "ML456789", validTill: "2024-12-31", status: "Active" }
-  ],
-  employees: [
-    { name: "Alice Smith", role: "Head Chef", photoUrl: "/placeholder.svg" },
-    { name: "Bob Johnson", role: "Sous Chef", photoUrl: "/placeholder.svg" },
-    { name: "Carol White", role: "Server", photoUrl: "/placeholder.svg" }
-  ],
-  facilityPhotos: [
-    { area: "Kitchen", url: "/placeholder.svg" },
-    { area: "Dining Area", url: "/placeholder.svg" },
-    { area: "Storage", url: "/placeholder.svg" }
-  ],
-  reviews: [
-    { user: "User1", text: "Great experience!", date: "2024-02-01" },
-    { user: "User2", text: "Excellent service", date: "2024-01-28" }
-  ]
-};
 
 const mockHygieneData = {
   scores: {
@@ -79,10 +35,67 @@ const mockHygieneData = {
 
 const RestaurantProfile = () => {
   const { licenseNumber } = useParams();
-  const businessData = {
-    ...mockBusinessData,
-    licenseNumber: licenseNumber
-  };
+  const [businessData, setBusinessData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBusinessData = async () => {
+      try {
+        const { data: business, error } = await supabase
+          .from('businesses')
+          .select(`
+            *,
+            owner:profiles(
+              full_name,
+              phone_number
+            )
+          `)
+          .eq('license_number', licenseNumber)
+          .maybeSingle();
+
+        if (error) {
+          throw error;
+        }
+
+        if (!business) {
+          toast.error("Business not found");
+          return;
+        }
+
+        setBusinessData(business);
+      } catch (error) {
+        console.error('Error fetching business data:', error);
+        toast.error("Failed to load business data");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (licenseNumber) {
+      fetchBusinessData();
+    }
+  }, [licenseNumber]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading business information...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!businessData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-xl text-gray-600">Business not found</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4">
@@ -93,11 +106,11 @@ const RestaurantProfile = () => {
           violations={mockHygieneData.violations}
         />
         <OwnerInfo owner={businessData.owner} />
-        <LabReports reports={businessData.labReports} />
-        <Certifications certifications={businessData.certifications} />
-        <TeamMembers employees={businessData.employees} />
-        <FacilityPhotos photos={businessData.facilityPhotos} />
-        <Reviews reviews={businessData.reviews} />
+        <LabReports reports={[]} />
+        <Certifications certifications={[]} />
+        <TeamMembers employees={[]} />
+        <FacilityPhotos photos={[]} />
+        <Reviews reviews={[]} />
       </div>
     </div>
   );

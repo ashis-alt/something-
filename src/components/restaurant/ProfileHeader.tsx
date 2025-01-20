@@ -5,25 +5,22 @@ import { QRCodeSVG } from "qrcode.react";
 
 interface ProfileHeaderProps {
   businessData: {
-    name: string;
-    licenseNumber: string;
-    gstinNumber: string;
+    id: string;
+    business_name: string;
+    license_number: string;
+    business_type: string;
     address: string;
-    website: string;
-    fssaiCare: string;
-    email: string;
-    fssaiCareEmail: string;
-    owner: {
-      name: string;
-      photoUrl: string;
+    owner?: {
+      full_name: string;
+      phone_number: string;
     };
   };
 }
 
 const ProfileHeader = ({ businessData }: ProfileHeaderProps) => {
   const qrCodeContent = JSON.stringify({
-    license: businessData.licenseNumber,
-    website: businessData.website
+    license: businessData.license_number,
+    name: businessData.business_name
   });
 
   return (
@@ -32,19 +29,19 @@ const ProfileHeader = ({ businessData }: ProfileHeaderProps) => {
         <div className="space-y-4">
           <div className="flex items-center gap-4">
             <Avatar className="h-20 w-20">
-              <AvatarImage src={businessData.owner.photoUrl} alt={businessData.name} />
-              <AvatarFallback>{businessData.name[0]}</AvatarFallback>
+              <AvatarImage src="/placeholder.svg" alt={businessData.business_name} />
+              <AvatarFallback>{businessData.business_name[0]}</AvatarFallback>
             </Avatar>
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold">{businessData.name}</h1>
+              <h1 className="text-3xl font-bold">{businessData.business_name}</h1>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <Hash className="h-4 w-4" />
-                  <span>License: {businessData.licenseNumber}</span>
+                  <span>License: {businessData.license_number}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Building className="h-4 w-4" />
-                  <span>GSTIN: {businessData.gstinNumber}</span>
+                  <span>Type: {businessData.business_type}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
@@ -54,20 +51,18 @@ const ProfileHeader = ({ businessData }: ProfileHeaderProps) => {
             </div>
           </div>
           
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4" />
-              <span>FSSAI Care: {businessData.fssaiCare}</span>
+          {businessData.owner && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Phone className="h-4 w-4" />
+                <span>Contact: {businessData.owner.phone_number}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4" />
+                <span>Owner: {businessData.owner.full_name}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4" />
-              <span>FSSAI Care Email: {businessData.fssaiCareEmail}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4" />
-              <span>Email: {businessData.email}</span>
-            </div>
-          </div>
+          )}
         </div>
         <div className="bg-white p-2 rounded-lg shadow-sm">
           <QRCodeSVG
