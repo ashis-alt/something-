@@ -22,7 +22,13 @@ const VerifyLicense = () => {
     try {
       const { data: business, error } = await supabase
         .from('businesses')
-        .select('*')
+        .select(`
+          *,
+          owner:profiles(
+            full_name,
+            phone_number
+          )
+        `)
         .eq('license_number', licenseNumber)
         .maybeSingle();
 

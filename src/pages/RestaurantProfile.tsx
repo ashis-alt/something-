@@ -105,7 +105,10 @@ const RestaurantProfile = () => {
           scores={mockHygieneData.scores}
           violations={mockHygieneData.violations}
         />
-        <OwnerInfo owner={businessData.owner} />
+        <OwnerInfo owner={{
+          name: businessData.owner?.full_name || 'N/A',
+          photoUrl: '/placeholder.svg'
+        }} />
         <LabReports reports={[]} />
         <Certifications certifications={[]} />
         <TeamMembers employees={[]} />
